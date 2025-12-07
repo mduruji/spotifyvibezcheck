@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "760734095534",
+    "project_id": "spotifyvibezcheck",
+    "storage_bucket": "spotifyvibezcheck.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760734095534:android:c4484f64b206eda9fa753f",
+        "android_client_info": {
+          "package_name": "com.chatterbox.spotifyvibezcheck"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoLSYFS8eA2IkomZij0SCnxE2aRuNOyUE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
