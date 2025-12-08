@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.chatterbox.spotifyvibezcheck.ui.theme.SpotifyVibezCheckTheme
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 // Spotify imports
 import com.spotify.android.appremote.api.ConnectionParams
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
     private val REDIRECT_URI = SpotifyConstants.REDIRECT_URI
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
