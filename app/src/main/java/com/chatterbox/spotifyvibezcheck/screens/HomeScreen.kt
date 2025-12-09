@@ -1,23 +1,24 @@
 package com.chatterbox.spotifyvibezcheck.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.chatterbox.spotifyvibezcheck.services.SpotifyAuthManager
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavController,
+    spotifyAuthManager: SpotifyAuthManager,
+    authStatus: String?,                     // NEW
+    onStartSpotifyAuth: () -> Unit           // NEW callback
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -26,12 +27,29 @@ fun HomeScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        // 🔥 Display a success or error message
+        if (!authStatus.isNullOrEmpty()) {
+            val color = if (authStatus.contains("success", true)) Color(0xFF1DB954) else Color.Red
+
+            Text(
+                text = authStatus,
+                color = color,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 20.dp)
+            )
+        }
+
         Button(
-            onClick = { /* TODO: Handle Spotify Login */ },
+            onClick = { onStartSpotifyAuth() },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1DB954)),
             modifier = Modifier.size(width = 300.dp, height = 50.dp)
         ) {
-            Text(text = "Login to Spotify", color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(
+                text = "Login to Spotify",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
