@@ -13,7 +13,6 @@ class SpotifyAuthController(
     private val onSuccess: (String) -> Unit,
     private val onError: (String) -> Unit
 ) {
-
     fun handleAuthResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode != SpotifyConstants.REQUEST_CODE) return
 

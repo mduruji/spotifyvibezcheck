@@ -1,9 +1,9 @@
 package com.chatterbox.spotifyvibezcheck.interfaces
 
-import com.chatterbox.spotifyvibezcheck.model.CurrentlyPlaying
-import com.chatterbox.spotifyvibezcheck.model.PlaylistResponse
-import com.chatterbox.spotifyvibezcheck.model.SearchResponse
-import com.chatterbox.spotifyvibezcheck.model.User
+import com.chatterbox.spotifyvibezcheck.models.CurrentlyPlaying
+import com.chatterbox.spotifyvibezcheck.models.PlaylistResponse
+import com.chatterbox.spotifyvibezcheck.models.SearchResponse
+import com.chatterbox.spotifyvibezcheck.models.User
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header

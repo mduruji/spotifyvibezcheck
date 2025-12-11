@@ -6,22 +6,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.chatterbox.spotifyvibezcheck.navigation.NavRoutes
-import com.chatterbox.spotifyvibezcheck.screens.HomeScreen
-import com.chatterbox.spotifyvibezcheck.screens.LoginScreen
-import com.chatterbox.spotifyvibezcheck.screens.SignupScreen
-import com.chatterbox.spotifyvibezcheck.screens.WelcomeScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.SpotifyAuthScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.LoginScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.PlaylistScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.SignupScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.WelcomeScreen
 import com.chatterbox.spotifyvibezcheck.services.AuthService
 import com.chatterbox.spotifyvibezcheck.services.RegisterService
 import com.chatterbox.spotifyvibezcheck.services.SpotifyAuthManager
 import com.chatterbox.spotifyvibezcheck.objects.SpotifyConstants
+import com.chatterbox.spotifyvibezcheck.services.SpotifyService
+import com.chatterbox.spotifyvibezcheck.services.UserService
+import com.google.firebase.auth.FirebaseAuth
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.chatterbox.spotifyvibezcheck.ui.theme.SpotifyVibezCheckTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -44,7 +48,9 @@ class MainActivity : ComponentActivity() {
 
         if (requestCode == SpotifyConstants.REQUEST_CODE) {
             val response = AuthorizationClient.getResponse(resultCode, data)
-            spotifyAuthManager.handleAuthResponse(response)
+            if (::spotifyAuthManager.isInitialized) {
+                spotifyAuthManager.handleAuthResponse(response)
+            }
         }
     }
 }
@@ -53,29 +59,76 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(activity: MainActivity) {
 
     val navController = rememberNavController()
+    val authService = remember { AuthService() }
+    val registerService = remember { RegisterService(authService) }
+    val scope = rememberCoroutineScope()
 
-    val authService = AuthService()
-    val registerService = RegisterService(authService)
+    var spotifyAuthStatus by remember { mutableStateOf<String?>("UNAUTHENTICATED") }
 
-    // Track the auth response text
-    var spotifyAuthStatus by remember { mutableStateOf<String?>(null) }
+    val userService = remember { UserService() }
 
-    // Create SpotifyAuthManager ONCE with remember
-    val spotifyAuthManager = remember {
-        SpotifyAuthManager(activity) { success, msg ->
-            spotifyAuthStatus = if (success) {
-                "SUCCESS: $msg"
+    val onSpotifyAuthComplete: suspend (String) -> Unit = { accessToken ->
+
+        val firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid
+        if (firebaseUserId == null) {
+            spotifyAuthStatus = "ERROR: Firebase user not logged in."
+        } else {
+            val spotifyService = SpotifyService { accessToken }
+
+            val response = spotifyService.getSpotifyUserProfile(accessToken)
+            if (response.isSuccessful) {
+                val spotifyUser = response.body()
+                if (spotifyUser != null) {
+                    val spotifyId = spotifyUser.id
+                    val spotifyUrl = spotifyUser.externalUrls.spotify
+
+                    userService.updateSpotifyData(
+                        userId = firebaseUserId,
+                        spotifyUser = spotifyId,
+                        spotifyProfileUrl = spotifyUrl
+                    )
+                    spotifyAuthStatus = "SUCCESS: Spotify data updated."
+                    navController.navigate(NavRoutes.Playlist.route) {
+                        popUpTo(NavRoutes.SpotifyAuth.route) { inclusive = true }
+                    }
+                } else {
+                    spotifyAuthStatus = "ERROR: Spotify user profile body is null."
+                }
             } else {
-                "FAILED: $msg"
+                spotifyAuthStatus = "ERROR: Failed to fetch Spotify profile. Code: ${response.code()}"
             }
-            println("SpotifyAuthLog → $spotifyAuthStatus")
         }
     }
 
-    // Assign it to MainActivity for onActivityResult
-    activity.spotifyAuthManager = spotifyAuthManager
+    val spotifyAuthManager = remember {
+        SpotifyAuthManager(activity) { success, tokenOrMsg ->
+            if (success && tokenOrMsg != null) {
+                spotifyAuthStatus = "TOKEN RECEIVED, UPDATING DATA..."
+                scope.launch { onSpotifyAuthComplete(tokenOrMsg) }
+            } else {
+                spotifyAuthStatus = "FAILED: $tokenOrMsg"
+            }
+        }
+    }
 
-    NavHost(navController = navController, startDestination = NavRoutes.Welcome.route) {
+    DisposableEffect(Unit) {
+        activity.spotifyAuthManager = spotifyAuthManager
+        onDispose { }
+    }
+
+    val cachedToken = spotifyAuthManager.getCachedToken()
+
+    LaunchedEffect(cachedToken) {
+        if (cachedToken != null && spotifyAuthStatus == "UNAUTHENTICATED") {
+            spotifyAuthStatus = "USING CACHED TOKEN..."
+            scope.launch { onSpotifyAuthComplete(cachedToken) }
+        }
+    }
+
+    NavHost(
+        navController = navController,
+        startDestination = NavRoutes.Welcome.route
+    ) {
 
         composable(NavRoutes.Welcome.route) {
             WelcomeScreen(navController)
@@ -89,13 +142,17 @@ fun MainScreen(activity: MainActivity) {
             SignupScreen(navController, registerService)
         }
 
-        composable(NavRoutes.Home.route) {
-            HomeScreen(
+        composable(NavRoutes.SpotifyAuth.route) {
+            SpotifyAuthScreen(
                 navController = navController,
                 spotifyAuthManager = spotifyAuthManager,
                 authStatus = spotifyAuthStatus,
                 onStartSpotifyAuth = { spotifyAuthManager.authenticate() }
             )
+        }
+
+        composable(NavRoutes.Playlist.route) {
+            PlaylistScreen()
         }
     }
 }

@@ -13,7 +13,7 @@ import androidx.navigation.NavController
 import com.chatterbox.spotifyvibezcheck.services.SpotifyAuthManager
 
 @Composable
-fun HomeScreen(
+fun SpotifyAuthScreen(
     navController: NavController,
     spotifyAuthManager: SpotifyAuthManager,
     authStatus: String?,                     // NEW

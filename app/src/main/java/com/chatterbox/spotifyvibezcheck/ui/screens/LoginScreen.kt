@@ -1,4 +1,4 @@
-package com.chatterbox.spotifyvibezcheck.screens
+package com.chatterbox.spotifyvibezcheck.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -69,7 +69,7 @@ fun LoginScreen(navController: NavController, authService: AuthService) {
                 scope.launch {
                     val user = authService.login(emailState.value, passwordState.value)
                     if (user != null) {
-                        navController.navigate(NavRoutes.Home.route)
+                        navController.navigate(NavRoutes.SpotifyAuth.route)
                     }
                 }
              },

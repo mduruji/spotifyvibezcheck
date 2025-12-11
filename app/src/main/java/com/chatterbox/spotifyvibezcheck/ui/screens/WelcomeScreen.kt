@@ -1,4 +1,4 @@
-package com.chatterbox.spotifyvibezcheck.screens
+package com.chatterbox.spotifyvibezcheck.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

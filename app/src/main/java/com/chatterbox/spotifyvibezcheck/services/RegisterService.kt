@@ -1,5 +1,8 @@
 package com.chatterbox.spotifyvibezcheck.services
 
+import android.util.Log
+import com.chatterbox.spotifyvibezcheck.objects.FirebaseConstants
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,18 +12,52 @@ class RegisterService(private val authService: AuthService) {
 
     private val db = FirebaseFirestore.getInstance()
 
+    // Default profile image
+    private val defaultProfileImage = FirebaseConstants.DEFAULT_PROFILE_IMG_URL
+
     suspend fun register(username: String, email: String, password: String): FirebaseUser? {
-        val user = authService.signup(email, password)
-        if (user != null) {
+        return try {
+            // 1. Sign up user
+            val user = authService.signup(email, password)
+            if (user == null) {
+                Log.e("RegisterService", "Firebase signup returned null")
+                return null
+            }
+
+            // 2. Confirm FirebaseAuth has current user
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            if (currentUser == null) {
+                Log.e("RegisterService", "Current user is null after signup")
+                return null
+            }
+
+            // 3. Prepare Firestore document
             val userMap = hashMapOf(
-                "userId" to user.uid,
+                "userId" to currentUser.uid,
                 "username" to username,
-                "photoUrl" to "",
+                "email" to email,
+                "photoUrl" to defaultProfileImage,
                 "friends" to emptyList<String>(),
-                "createdAt" to FieldValue.serverTimestamp()
+                "createdAt" to FieldValue.serverTimestamp(),
+                "spotifyUser" to "",
+                "spotifyProfileUri" to ""
             )
-            db.collection("users").document(user.uid).set(userMap).await()
+
+            // 4. Write to Firestore
+            try {
+                db.collection("users")
+                    .document(currentUser.uid)
+                    .set(userMap)
+                    .await()
+                Log.d("RegisterService", "Firestore user created: ${currentUser.uid}")
+            } catch (e: Exception) {
+                Log.e("RegisterService", "Error writing user to Firestore", e)
+            }
+
+            user
+        } catch (e: Exception) {
+            Log.e("RegisterService", "Error during registration", e)
+            null
         }
-        return user
     }
 }
