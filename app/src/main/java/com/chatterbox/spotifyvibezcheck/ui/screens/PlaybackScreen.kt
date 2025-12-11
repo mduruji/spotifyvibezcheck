@@ -15,21 +15,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.chatterbox.spotifyvibezcheck.ui.components.BottomNavigationBar
-import com.chatterbox.spotifyvibezcheck.ui.components.FriendCard
-import com.chatterbox.spotifyvibezcheck.ui.components.FriendCardSearch
-import com.chatterbox.spotifyvibezcheck.ui.components.PlaylistCard
-import com.chatterbox.spotifyvibezcheck.ui.components.SongCard
-import com.chatterbox.spotifyvibezcheck.ui.components.SongCardSearch
-import com.chatterbox.spotifyvibezcheck.util.SampleData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaylistScreen(navController: NavController) {
+fun PlaybackScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Playlists")
+                    Text("Playback")
                 },
 
                 actions = {
@@ -54,21 +48,7 @@ fun PlaylistScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            item{
-                PlaylistCard(playlist = SampleData.samplePlaylist)
-            }
-            item{
-                FriendCard(user = SampleData.sampleUser)
-            }
-            item{
-                SongCard(song = SampleData.sampleTrack)
-            }
-            item{
-                SongCardSearch(song = SampleData.sampleTrack)
-            }
-            item{
-                FriendCardSearch(user = SampleData.sampleUser)
-            }
+
         }
     }
 }

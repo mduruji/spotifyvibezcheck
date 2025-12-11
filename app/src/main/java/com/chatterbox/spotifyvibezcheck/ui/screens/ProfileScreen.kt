@@ -13,10 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import com.chatterbox.spotifyvibezcheck.ui.components.BottomNavigationBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -37,7 +39,8 @@ fun ProfileScreen() {
                     }
                 }
             )
-        }
+        },
+        bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
         LazyColumn(
             // Apply the padding provided by Scaffold to avoid content overlapping the TopAppBar

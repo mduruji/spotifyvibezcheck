@@ -13,7 +13,9 @@ import androidx.navigation.compose.rememberNavController
 import com.chatterbox.spotifyvibezcheck.navigation.NavRoutes
 import com.chatterbox.spotifyvibezcheck.ui.screens.SpotifyAuthScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.LoginScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.PlaybackScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.PlaylistScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.ProfileScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.SignupScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.WelcomeScreen
 import com.chatterbox.spotifyvibezcheck.services.AuthService
@@ -152,7 +154,15 @@ fun MainScreen(activity: MainActivity) {
         }
 
         composable(NavRoutes.Playlist.route) {
-            PlaylistScreen()
+            PlaylistScreen(navController)
+        }
+
+        composable(NavRoutes.Playback.route) {
+            PlaybackScreen(navController)
+        }
+
+        composable(NavRoutes.Profile.route) {
+            ProfileScreen(navController)
         }
     }
 }
