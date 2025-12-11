@@ -30,8 +30,8 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                    android:scheme="spotifyvibezcheck"
                     android:host="spotify-auth"
+                    android:scheme="spotifyvibezcheck"
                 />
             </intent-filter>
         </activity>
