@@ -1,4 +1,4 @@
-package com.chatterbox.spotifyvibezcheck.screens
+package com.chatterbox.spotifyvibezcheck.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,7 +28,6 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        // 🔥 Display a success or error message
         if (!authStatus.isNullOrEmpty()) {
             val color = if (authStatus.contains("success", true)) Color(0xFF1DB954) else Color.Red
 

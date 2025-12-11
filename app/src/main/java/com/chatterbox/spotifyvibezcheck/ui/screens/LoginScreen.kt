@@ -1,5 +1,6 @@
 package com.chatterbox.spotifyvibezcheck.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -64,6 +65,7 @@ fun LoginScreen(navController: NavController, authService: AuthService) {
         Spacer(modifier = Modifier.height(48.dp))
         Button(
             onClick = { 
+                Log.d("LoginScreen", "Login button clicked")
                 scope.launch {
                     val user = authService.login(emailState.value, passwordState.value)
                     if (user != null) {
