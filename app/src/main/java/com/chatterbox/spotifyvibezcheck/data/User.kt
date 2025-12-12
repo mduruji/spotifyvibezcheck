@@ -5,6 +5,9 @@ data class User(
     val email: String = "",
     val photoUrl: String = "",
     val friends: List<String> = emptyList(),
+    val friendRequests: List<String> = emptyList(),   // NEW
+    val playlists: List<String> = emptyList(),         // NEW
     val spotifyUser: String = "",
     val spotifyProfileUri: String = ""
 )
+
