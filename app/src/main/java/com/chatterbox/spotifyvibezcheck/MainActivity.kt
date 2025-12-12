@@ -10,6 +10,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.chatterbox.spotifyvibezcheck.models.User
 import com.chatterbox.spotifyvibezcheck.navigation.NavRoutes
 import com.chatterbox.spotifyvibezcheck.ui.screens.SpotifyAuthScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.LoginScreen
@@ -24,6 +25,8 @@ import com.chatterbox.spotifyvibezcheck.services.SpotifyAuthManager
 import com.chatterbox.spotifyvibezcheck.objects.SpotifyConstants
 import com.chatterbox.spotifyvibezcheck.services.SpotifyService
 import com.chatterbox.spotifyvibezcheck.services.UserService
+import com.chatterbox.spotifyvibezcheck.ui.screens.FriendSearchScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.RequestScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.chatterbox.spotifyvibezcheck.ui.theme.SpotifyVibezCheckTheme
@@ -75,9 +78,9 @@ fun MainScreen(activity: MainActivity) {
         if (firebaseUserId == null) {
             spotifyAuthStatus = "ERROR: Firebase user not logged in."
         } else {
-            val spotifyService = SpotifyService { accessToken }
+            val spotifyService = SpotifyService(activity.applicationContext) { accessToken }
 
-            val response = spotifyService.getSpotifyUserProfile(accessToken)
+            val response = spotifyService.getCurrentSpotifyUser()
             if (response.isSuccessful) {
                 val spotifyUser = response.body()
                 if (spotifyUser != null) {
@@ -162,7 +165,15 @@ fun MainScreen(activity: MainActivity) {
         }
 
         composable(NavRoutes.Profile.route) {
-            ProfileScreen(navController)
+            ProfileScreen(navController, authService)
+        }
+
+        composable(NavRoutes.FriendSearch.route) {
+            FriendSearchScreen(navController)
+        }
+
+        composable(NavRoutes.Request.route) {
+            RequestScreen(navController)
         }
     }
 }

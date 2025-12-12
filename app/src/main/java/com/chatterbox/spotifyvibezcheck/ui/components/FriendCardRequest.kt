@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,12 +25,15 @@ import com.chatterbox.spotifyvibezcheck.R
 import com.chatterbox.spotifyvibezcheck.data.User
 
 @Composable
-fun FriendCardSearch(user: User, isSelected: Boolean, onSelectionChanged: (Boolean) -> Unit) {
+fun FriendCardRequest(
+    user: User,
+    onAccept: () -> Unit,
+    onDecline: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        onClick = { onSelectionChanged(!isSelected) }
+            .padding(8.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -47,10 +54,13 @@ fun FriendCardSearch(user: User, isSelected: Boolean, onSelectionChanged: (Boole
                 style = MaterialTheme.typography.titleLarge
             )
 
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = { onSelectionChanged(it) }
-            )
+            IconButton(onClick = onAccept) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "Accept Request")
+            }
+
+            IconButton(onClick = onDecline) {
+                Icon(imageVector = Icons.Default.Close, contentDescription = "Decline Request")
+            }
         }
     }
 }
