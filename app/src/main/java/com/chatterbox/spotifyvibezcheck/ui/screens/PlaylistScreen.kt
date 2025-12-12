@@ -54,21 +54,21 @@ fun PlaylistScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            item{
-                PlaylistCard(playlist = SampleData.samplePlaylist)
-            }
-            item{
-                FriendCard(user = SampleData.sampleUser)
-            }
-            item{
-                SongCard(song = SampleData.sampleTrack)
-            }
-            item{
-                SongCardSearch(song = SampleData.sampleTrack)
-            }
-            item{
-                FriendCardSearch(user = SampleData.sampleUser)
-            }
+//            item{
+//                PlaylistCard(playlist = SampleData.samplePlaylist)
+//            }
+//            item{
+//                FriendCard(user = SampleData.sampleUser)
+//            }
+//            item{
+//                SongCard(song = SampleData.sampleTrack)
+//            }
+//            item{
+//                SongCardSearch(song = SampleData.sampleTrack)
+//            }
+//            item{
+//                FriendCardSearch(user = SampleData.sampleUser)
+//            }
         }
     }
 }

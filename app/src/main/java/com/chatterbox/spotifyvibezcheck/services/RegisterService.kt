@@ -31,14 +31,14 @@ class RegisterService(private val authService: AuthService) {
                 return null
             }
 
-            // 3. Prepare Firestore document
             val userMap = hashMapOf(
                 "userId" to currentUser.uid,
                 "username" to username,
                 "email" to email,
                 "photoUrl" to defaultProfileImage,
                 "friends" to emptyList<String>(),
-                "createdAt" to FieldValue.serverTimestamp(),
+                "friendRequests" to emptyList<String>(),
+                "playlists" to emptyList<String>(),
                 "spotifyUser" to "",
                 "spotifyProfileUri" to ""
             )

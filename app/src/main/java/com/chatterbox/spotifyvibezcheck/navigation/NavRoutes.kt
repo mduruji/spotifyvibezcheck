@@ -8,4 +8,6 @@ sealed class NavRoutes(val route: String) {
     object Playlist : NavRoutes("playlist")
     object Playback : NavRoutes("playback")
     object Profile : NavRoutes("profile")
+    object FriendSearch : NavRoutes("friend_search")
+    object Request : NavRoutes("request")
 }

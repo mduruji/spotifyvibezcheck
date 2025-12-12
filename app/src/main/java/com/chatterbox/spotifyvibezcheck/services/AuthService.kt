@@ -29,4 +29,8 @@ class AuthService {
             null
         }
     }
+
+    fun signOut() {
+        auth.signOut()
+    }
 }

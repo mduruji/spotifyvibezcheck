@@ -10,10 +10,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,14 +21,12 @@ import com.chatterbox.spotifyvibezcheck.R
 import com.chatterbox.spotifyvibezcheck.data.User
 
 @Composable
-fun FriendCardSearch(user: User){
+fun FriendCardSearch(user: User, isSelected: Boolean, onSelectionChanged: (Boolean) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        onClick = {
-            //onCardClick(playlist)
-        }
+        onClick = { onSelectionChanged(!isSelected) }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -53,11 +47,9 @@ fun FriendCardSearch(user: User){
                 style = MaterialTheme.typography.titleLarge
             )
 
-            var checked by remember { mutableStateOf(false) }
-
             Checkbox(
-                checked = checked,
-                onCheckedChange = { checked = it }
+                checked = isSelected,
+                onCheckedChange = { onSelectionChanged(it) }
             )
         }
     }
