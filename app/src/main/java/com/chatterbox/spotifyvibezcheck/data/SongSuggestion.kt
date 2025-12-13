@@ -1,8 +1,10 @@
 package com.chatterbox.spotifyvibezcheck.data
 
-
 data class SongSuggestion(
-    val songId: String = "",
+    val trackId: String = "",
+    val trackName: String = "",
+    val artistName: String = "",
+    val albumArtUrl: String? = null,
     val suggestedBy: String = "",
-    val voters: List<String> = emptyList(),   // Users who voted YES
+    val votes: List<String> = emptyList()
 )

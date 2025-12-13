@@ -22,14 +22,14 @@ fun SpotifyAuthScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
         if (!authStatus.isNullOrEmpty()) {
-            val color = if (authStatus.contains("success", true)) Color(0xFF1DB954) else Color.Red
+            val color = if (authStatus.contains("success", true)) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
 
             Text(
                 text = authStatus,
@@ -41,12 +41,12 @@ fun SpotifyAuthScreen(
 
         Button(
             onClick = { onStartSpotifyAuth() },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1DB954)),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier.size(width = 300.dp, height = 50.dp)
         ) {
             Text(
                 text = "Login to Spotify",
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
         }

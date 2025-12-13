@@ -1,34 +1,64 @@
 package com.chatterbox.spotifyvibezcheck.interfaces
 
+import com.chatterbox.spotifyvibezcheck.models.AddTracksToPlaylistRequest
+import com.chatterbox.spotifyvibezcheck.models.CreatePlaylistRequest
 import com.chatterbox.spotifyvibezcheck.models.CurrentlyPlaying
+import com.chatterbox.spotifyvibezcheck.models.Playlist
 import com.chatterbox.spotifyvibezcheck.models.PlaylistResponse
+import com.chatterbox.spotifyvibezcheck.models.PlaylistTracksResponse
 import com.chatterbox.spotifyvibezcheck.models.SearchResponse
 import com.chatterbox.spotifyvibezcheck.models.User
 import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface SpotifyWebAPI {
+
     @GET("me")
-    suspend fun getCurrentUser(
-        @Header("Authorization") authorization: String
+    suspend fun getCurrentUser(): Response<User>
+
+    @GET("users/{user_id}")
+    suspend fun getUser(
+        @Path("user_id") userId: String
     ): Response<User>
 
     @GET("me/playlists")
     suspend fun getUserPlaylists(
-        @Header("Authorization") authorization: String,
         @Query("limit") limit: Int = 20
     ): Response<PlaylistResponse>
 
+    @GET("playlists/{playlist_id}/tracks")
+    suspend fun getPlaylistTracks(
+        @Path("playlist_id") playlistId: String
+    ): Response<PlaylistTracksResponse>
+
+    @POST("users/{user_id}/playlists")
+    suspend fun createPlaylist(
+        @Path("user_id") userId: String,
+        @Body body: CreatePlaylistRequest
+    ): Response<Playlist>
+
+    @POST("playlists/{playlist_id}/tracks")
+    suspend fun addTracksToPlaylist(
+        @Path("playlist_id") playlistId: String,
+        @Body body: AddTracksToPlaylistRequest
+    ): Response<Unit>
+
+    @DELETE("playlists/{playlist_id}/followers")
+    suspend fun unfollowPlaylist(
+        @Path("playlist_id") playlistId: String
+    ): Response<Unit>
+
     @GET("me/player/currently-playing")
-    suspend fun getCurrentlyPlaying(
-        @Header("Authorization") authorization: String
-    ): Response<CurrentlyPlaying>
+    suspend fun getCurrentlyPlaying(): Response<CurrentlyPlaying>
 
     @GET("search")
     suspend fun searchTracks(
-        @Header("Authorization") authorization: String,
         @Query("q") query: String,
         @Query("type") type: String = "track",
         @Query("limit") limit: Int = 20

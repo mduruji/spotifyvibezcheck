@@ -16,6 +16,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +27,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -71,14 +71,14 @@ fun SignupScreen(navController: NavController, registerService: RegisterService)
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = "Create an account",
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
@@ -95,7 +95,7 @@ fun SignupScreen(navController: NavController, registerService: RegisterService)
             isError = usernameError != null,
             supportingText = {
                 usernameError?.let {
-                    Text(text = it, color = Color.Red)
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
                 }
             },
             modifier = Modifier.width(300.dp),
@@ -149,14 +149,14 @@ fun SignupScreen(navController: NavController, registerService: RegisterService)
             isError = passwordMismatchError,
             supportingText = {
                 if (passwordMismatchError) {
-                    Text("Passwords do not match.", color = Color.Red)
+                    Text("Passwords do not match.", color = MaterialTheme.colorScheme.error)
                 }
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         registrationError?.let {
-            Text(text = it, color = Color.Red, modifier = Modifier.padding(bottom = 8.dp))
+            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
         }
 
         if (isLoading) {
@@ -187,7 +187,7 @@ fun SignupScreen(navController: NavController, registerService: RegisterService)
                     }
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1DB954)),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier.width(300.dp),
             enabled = !isLoading && usernameError == null &&
                     usernameState.value.isNotEmpty() &&
@@ -195,18 +195,18 @@ fun SignupScreen(navController: NavController, registerService: RegisterService)
                     passwordState.value.isNotEmpty() &&
                     !passwordMismatchError
         ) {
-            Text(text = "Sign Up", color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(text = "Sign Up", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { navController.popBackStack() },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
             modifier = Modifier.width(300.dp),
             enabled = !isLoading
         ) {
-            Text(text = "Back", color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(text = "Back", color = MaterialTheme.colorScheme.onSecondary, fontWeight = FontWeight.Bold)
         }
     }
 }

@@ -19,11 +19,14 @@ class PlaylistService {
         }
     }
 
-    suspend fun suggestSong(playlistId: String, songId: String, userId: String) {
+    suspend fun suggestSong(playlistId: String, song: com.chatterbox.spotifyvibezcheck.models.Track, userId: String) {
         val suggestion = SongSuggestion(
-            songId = songId,
+            trackId = song.id,
+            trackName = song.name,
+            artistName = song.artists.firstOrNull()?.name ?: "Unknown Artist",
+            albumArtUrl = song.album.images.firstOrNull()?.url,
             suggestedBy = userId,
-            voters = listOf(userId) // auto-vote
+            votes = listOf(userId) // auto-vote
         )
 
         db.collection("playlists")
@@ -32,10 +35,10 @@ class PlaylistService {
             .await()
     }
 
-    suspend fun voteForSong(playlistId: String, songId: String, userId: String) {
+    suspend fun voteForSong(playlistId: String, trackId: String, userId: String) {
         val playlist = getPlaylist(playlistId) ?: return
         val updated = playlist.suggestedSongs.map { s ->
-            if (s.songId == songId) s.copy(voters = (s.voters + userId).distinct())
+            if (s.trackId == trackId) s.copy(votes = (s.votes + userId).distinct())
             else s
         }
 
@@ -52,13 +55,13 @@ class PlaylistService {
 
         val half = playlist.collaborators.size / 2
 
-        val approved = playlist.suggestedSongs.filter { it.voters.size >= half }
+        val approved = playlist.suggestedSongs.filter { it.votes.size >= half }
         if (approved.isEmpty()) return
 
         val newTrackIds = playlist.trackIds.toMutableList()
-        approved.forEach { newTrackIds.add(it.songId) }
+        approved.forEach { newTrackIds.add(it.trackId) }
 
-        val remaining = playlist.suggestedSongs.filter { it.voters.size < half }
+        val remaining = playlist.suggestedSongs.filter { it.votes.size < half }
 
         db.collection("playlists").document(playlistId)
             .update(

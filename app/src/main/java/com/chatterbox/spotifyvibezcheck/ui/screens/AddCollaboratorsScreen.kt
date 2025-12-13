@@ -2,6 +2,7 @@ package com.chatterbox.spotifyvibezcheck.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,24 +24,24 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.chatterbox.spotifyvibezcheck.models.Track
-import com.chatterbox.spotifyvibezcheck.ui.components.SongCardSearch
+import com.chatterbox.spotifyvibezcheck.data.User
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SongSearchScreen(navController: NavController, playlistId: String, viewModel: SongSearchViewModel = viewModel()) {
+fun AddCollaboratorsScreen(navController: NavController, playlistId: String, viewModel: AddCollaboratorsViewModel = viewModel()) {
     var searchQuery by remember { mutableStateOf("") }
     val searchResults by viewModel.searchResults.collectAsState()
-    val selectedTracks = remember { mutableStateMapOf<String, Track>() }
+    val selectedCollaborators = remember { mutableStateMapOf<String, User>() }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Search Songs") },
+                title = { Text("Add Collaborators") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -53,7 +55,7 @@ fun SongSearchScreen(navController: NavController, playlistId: String, viewModel
                 },
                 actions = {
                     IconButton(onClick = {
-                        viewModel.addSuggestions(playlistId, selectedTracks.values.toList())
+                        viewModel.addCollaborators(playlistId, selectedCollaborators.keys.toList())
                         navController.popBackStack()
                     }) {
                         Icon(Icons.Default.Check, contentDescription = "Confirm")
@@ -72,11 +74,11 @@ fun SongSearchScreen(navController: NavController, playlistId: String, viewModel
             TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("Search for songs") },
+                label = { Text("Search for users") },
                 modifier = Modifier.fillMaxWidth()
             )
             Button(
-                onClick = { viewModel.searchTracks(searchQuery) },
+                onClick = { viewModel.searchUsers(searchQuery) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             ) {
@@ -85,19 +87,26 @@ fun SongSearchScreen(navController: NavController, playlistId: String, viewModel
             LazyColumn(
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                items(searchResults) { track ->
-                    SongCardSearch(
-                        track = track, 
-                        isSelected = selectedTracks.containsKey(track.id),
-                        onSelectionChanged = {
-                            if (selectedTracks.containsKey(track.id)) {
-                                selectedTracks.remove(track.id)
-                            } else {
-                                selectedTracks[track.id] = track
+                items(searchResults) { user ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = user.username,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Checkbox(
+                            checked = selectedCollaborators.containsKey(user.userId),
+                            onCheckedChange = {
+                                if (selectedCollaborators.containsKey(user.userId)) {
+                                    selectedCollaborators.remove(user.userId)
+                                } else {
+                                    selectedCollaborators[user.userId] = user
+                                }
                             }
-                        },
-                        onPlayClick = { viewModel.playTrack(track.uri) }
-                    )
+                        )
+                    }
                 }
             }
         }

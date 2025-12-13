@@ -1,16 +1,35 @@
 package com.chatterbox.spotifyvibezcheck.ui.screens
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -31,7 +50,15 @@ fun PlaybackScreen(navController: NavController, viewModel: PlaybackViewModel = 
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Now Playing") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Now Playing") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        },
         bottomBar = { BottomNavigationBar(navController) }
     ) { padding ->
 
@@ -39,30 +66,34 @@ fun PlaybackScreen(navController: NavController, viewModel: PlaybackViewModel = 
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(horizontal = 24.dp, vertical = 32.dp)
+                .background(MaterialTheme.colorScheme.background),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
 
             if (!connected) {
-                LoadingView()
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text("Connecting to Spotify…")
+                    Spacer(Modifier.height(16.dp))
+                    CircularProgressIndicator()
+                }
                 return@Column
             }
 
             val track = playerState?.track
             val isPaused = playerState?.isPaused ?: true
-
-            val targetProgress = if (track != null && track.duration > 0) {
-                (playerState?.playbackPosition?.toFloat() ?: 0f) / track.duration
-            } else {
-                0f
+            val progress = remember(playerState) {
+                if (track != null && track.duration > 0) {
+                    playerState!!.playbackPosition.toFloat() / track.duration
+                } else {
+                    0f
+                }
             }
-
-            val smoothProgress by animateFloatAsState(
-                targetValue = targetProgress,
-                animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
-                label = "ProgressAnimation"
-            )
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -93,8 +124,8 @@ fun PlaybackScreen(navController: NavController, viewModel: PlaybackViewModel = 
             ) {
                 if (track != null) {
                     LinearProgressIndicator(
-                        progress = { smoothProgress },
-                        modifier = Modifier.fillMaxWidth(),
+                        progress = { progress },
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(
@@ -114,62 +145,42 @@ fun PlaybackScreen(navController: NavController, viewModel: PlaybackViewModel = 
 
                 Spacer(Modifier.height(24.dp))
 
-                MediaControls(
-                    isPlaying = !isPaused,
-                    onPrevClick = { viewModel.prev() },
-                    onNextClick = { viewModel.next() },
-                    onPlayPauseClick = { if (isPaused) viewModel.resume() else viewModel.pause() },
-                    enabled = track != null
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { viewModel.prev() }, enabled = track != null) {
+                        Icon(
+                            Icons.Default.SkipPrevious,
+                            contentDescription = "Previous",
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            if (isPaused) viewModel.resume() else viewModel.pause()
+                        },
+                        modifier = Modifier.size(80.dp),
+                        enabled = track != null
+                    ) {
+                        Icon(
+                            if (isPaused) Icons.Default.PlayArrow else Icons.Default.Pause,
+                            contentDescription = "Play/Pause",
+                            modifier = Modifier.size(80.dp)
+                        )
+                    }
+
+                    IconButton(onClick = { viewModel.next() }, enabled = track != null) {
+                        Icon(
+                            Icons.Default.SkipNext,
+                            contentDescription = "Next",
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+                }
             }
-        }
-    }
-}
-
-@Composable
-fun LoadingView() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Connecting to Spotify…")
-        Spacer(Modifier.height(16.dp))
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-fun MediaControls(
-    isPlaying: Boolean,
-    onPrevClick: () -> Unit,
-    onNextClick: () -> Unit,
-    onPlayPauseClick: () -> Unit,
-    enabled: Boolean
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = onPrevClick, enabled = enabled) {
-            Icon(Icons.Default.SkipPrevious, contentDescription = "Previous", modifier = Modifier.size(48.dp))
-        }
-
-        IconButton(
-            onClick = onPlayPauseClick,
-            modifier = Modifier.size(80.dp),
-            enabled = enabled
-        ) {
-            Icon(
-                if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                contentDescription = "Play/Pause",
-                modifier = Modifier.size(80.dp)
-            )
-        }
-
-        IconButton(onClick = onNextClick, enabled = enabled) {
-            Icon(Icons.Default.SkipNext, contentDescription = "Next", modifier = Modifier.size(48.dp))
         }
     }
 }

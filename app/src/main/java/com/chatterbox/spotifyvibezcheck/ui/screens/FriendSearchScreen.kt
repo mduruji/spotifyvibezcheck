@@ -1,5 +1,6 @@
 package com.chatterbox.spotifyvibezcheck.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,13 +11,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -42,6 +46,12 @@ fun FriendSearchScreen(navController: NavController) {
                 title = {
                     Text("Find Friends")
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -77,6 +87,7 @@ fun FriendSearchScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             TextField(
                 value = searchQuery,
@@ -90,9 +101,10 @@ fun FriendSearchScreen(navController: NavController) {
                         users = userService.searchUsersByUsername(searchQuery)
                     }
                 },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             ) {
-                Text("Search")
+                Text("Search", color = MaterialTheme.colorScheme.onPrimary)
             }
             LazyColumn(
                 modifier = Modifier

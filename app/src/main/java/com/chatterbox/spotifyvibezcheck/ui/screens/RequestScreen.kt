@@ -1,5 +1,6 @@
 package com.chatterbox.spotifyvibezcheck.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,14 +11,17 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.chatterbox.spotifyvibezcheck.data.User
+import com.chatterbox.spotifyvibezcheck.services.SpotifyApiClient
 import com.chatterbox.spotifyvibezcheck.services.UserService
 import com.chatterbox.spotifyvibezcheck.ui.components.FriendCardRequest
 import com.google.firebase.auth.FirebaseAuth
@@ -29,11 +33,19 @@ fun RequestScreen(navController: NavController) {
     val userService = remember { UserService() }
     var requests by remember { mutableStateOf<List<User>>(emptyList()) }
     val scope = rememberCoroutineScope()
+    val spotifyApiClient = remember { SpotifyApiClient(token = "") } // This token needs to be properly managed
 
     LaunchedEffect(Unit) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
-            requests = userService.getFriendRequests(currentUser.uid)
+            val friendRequests = userService.getFriendRequests(currentUser.uid)
+            val fullUserDetails = friendRequests.mapNotNull { user ->
+                val spotifyUser = spotifyApiClient.getUser(user.spotifyUser).body()
+                spotifyUser?.let {
+                    user.copy(photoUrl = it.images.firstOrNull()?.url ?: "")
+                }
+            }
+            requests = fullUserDetails
         }
     }
 
@@ -43,6 +55,11 @@ fun RequestScreen(navController: NavController) {
                 title = {
                     Text("Friend Requests")
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -59,6 +76,7 @@ fun RequestScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             LazyColumn(
                 modifier = Modifier

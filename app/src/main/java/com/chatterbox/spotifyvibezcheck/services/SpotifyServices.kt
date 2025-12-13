@@ -2,6 +2,11 @@ package com.chatterbox.spotifyvibezcheck.services
 
 import android.content.Context
 import com.chatterbox.spotifyvibezcheck.interfaces.SpotifyWebAPI
+import com.chatterbox.spotifyvibezcheck.models.AddTracksToPlaylistRequest
+import com.chatterbox.spotifyvibezcheck.models.CreatePlaylistRequest
+import com.chatterbox.spotifyvibezcheck.models.Playlist
+import com.chatterbox.spotifyvibezcheck.models.PlaylistTracksResponse
+import com.chatterbox.spotifyvibezcheck.models.SearchResponse
 import com.chatterbox.spotifyvibezcheck.models.User
 import com.spotify.protocol.types.PlayerState
 import retrofit2.Response
@@ -13,30 +18,39 @@ class SpotifyService(
     private val api: SpotifyWebAPI = SpotifyApiClient.create(tokenProvider)
     private val playback = SpotifyPlaybackManager(context)
 
-    suspend fun getCurrentSpotifyUser(): Response<User> {
-        val token = tokenProvider() ?: throw IllegalStateException("Missing Spotify token")
-        return api.getCurrentUser("Bearer $token")
-    }
+    suspend fun getCurrentSpotifyUser(): Response<User> =
+        api.getCurrentUser()
 
-    suspend fun getUserPlaylists() = api.getUserPlaylists("Bearer ${tokenProvider()}")
+    suspend fun getUserPlaylists() =
+        api.getUserPlaylists()
 
-    fun connectToSpotifyRemote(callback: (Boolean) -> Unit) {
+    suspend fun getPlaylistTracks(playlistId: String): Response<PlaylistTracksResponse> =
+        api.getPlaylistTracks(playlistId)
+
+    suspend fun createPlaylist(userId: String, name: String): Response<Playlist> =
+        api.createPlaylist(userId, CreatePlaylistRequest(name))
+
+    suspend fun addTracksToPlaylist(
+        playlistId: String,
+        trackUris: List<String>
+    ): Response<Unit> =
+        api.addTracksToPlaylist(playlistId, AddTracksToPlaylistRequest(trackUris))
+
+    suspend fun searchTracks(query: String): Response<SearchResponse> =
+        api.searchTracks(query)
+
+    suspend fun unfollowPlaylist(playlistId: String): Response<Unit> =
+        api.unfollowPlaylist(playlistId)
+
+    fun connectRemote(callback: (Boolean) -> Unit) {
         playback.connect(callback)
     }
 
-    fun playTrack(trackId: String) {
-        playback.play("spotify:track:$trackId")
+    fun disconnectRemote() {
+        playback.disconnect()
     }
 
-    fun playPlaylist(playlistId: String) {
-        playback.play("spotify:playlist:$playlistId")
+    fun playTrack(uri: String) {
+        playback.play(uri)
     }
-
-    fun pause() = playback.pause()
-    fun resume() = playback.resume()
-    fun next() = playback.skipToNext()
-    fun previous() = playback.skipToPrevious()
-
-    fun getPlayerState(callback: (PlayerState?) -> Unit) =
-        playback.getPlayerState(callback)
 }
