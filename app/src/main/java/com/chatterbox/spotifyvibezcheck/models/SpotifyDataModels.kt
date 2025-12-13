@@ -2,6 +2,11 @@ package com.chatterbox.spotifyvibezcheck.models
 
 import com.google.gson.annotations.SerializedName
 
+data class CreatePlaylistRequest(
+    val name: String,
+    val public: Boolean = false
+)
+
 data class User(
     val id: String,
     @SerializedName("display_name") val displayName: String,
@@ -21,6 +26,14 @@ data class Playlist(
     val id: String,
     val name: String,
     val images: List<Image>
+)
+
+data class PlaylistTracksResponse(
+    val items: List<PlaylistTrack>
+)
+
+data class PlaylistTrack(
+    val track: Track
 )
 
 data class CurrentlyPlaying(

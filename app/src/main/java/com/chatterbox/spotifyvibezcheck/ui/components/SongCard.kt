@@ -21,7 +21,7 @@ import com.chatterbox.spotifyvibezcheck.models.Track
 private val genres = listOf("Rock", "Pop", "Hip Hop", "Jazz", "Classical", "Electronic", "R&B", "Country")
 
 @Composable
-fun SongCard(song: Track) {
+fun SongCard(track: Track) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,11 +41,11 @@ fun SongCard(song: Track) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = song.name,
+                    text = track.name,
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    text = song.artists.joinToString { it.name },
+                    text = track.artists.joinToString { it.name },
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(

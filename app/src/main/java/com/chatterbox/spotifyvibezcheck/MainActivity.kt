@@ -2,19 +2,24 @@ package com.chatterbox.spotifyvibezcheck
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.chatterbox.spotifyvibezcheck.models.User
 import com.chatterbox.spotifyvibezcheck.navigation.NavRoutes
 import com.chatterbox.spotifyvibezcheck.ui.screens.SpotifyAuthScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.LoginScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.PlaybackScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.PlaylistCreationScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.PlaylistRoom
 import com.chatterbox.spotifyvibezcheck.ui.screens.PlaylistScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.ProfileScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.SignupScreen
@@ -74,6 +79,9 @@ fun MainScreen(activity: MainActivity) {
 
     val onSpotifyAuthComplete: suspend (String) -> Unit = { accessToken ->
 
+        val sharedPrefs = activity.getSharedPreferences("spotify_prefs", 0)
+        sharedPrefs.edit().putString("spotify_token", accessToken).apply()
+        Log.d("MainActivity", "Token saved to SharedPreferences")
         val firebaseUserId = FirebaseAuth.getInstance().currentUser?.uid
         if (firebaseUserId == null) {
             spotifyAuthStatus = "ERROR: Firebase user not logged in."
@@ -174,6 +182,18 @@ fun MainScreen(activity: MainActivity) {
 
         composable(NavRoutes.Request.route) {
             RequestScreen(navController)
+        }
+
+        composable(NavRoutes.PlaylistCreation.route) {
+            PlaylistCreationScreen(navController)
+        }
+
+        composable(
+            route = NavRoutes.PlaylistRoom.route,
+            arguments = listOf(navArgument("playlistId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val playlistId = backStackEntry.arguments?.getString("playlistId") ?: ""
+            PlaylistRoom(navController, playlistId)
         }
     }
 }

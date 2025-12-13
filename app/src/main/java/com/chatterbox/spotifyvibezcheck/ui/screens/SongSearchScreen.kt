@@ -26,9 +26,7 @@ fun SongSearchScreen() {
 
                 actions = {
                     IconButton(
-                        onClick = {
-                            //navController.navigate("note_editor")
-                        }
+                        onClick = { }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -40,7 +38,6 @@ fun SongSearchScreen() {
         }
     ) { innerPadding ->
         LazyColumn(
-            // Apply the padding provided by Scaffold to avoid content overlapping the TopAppBar
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
