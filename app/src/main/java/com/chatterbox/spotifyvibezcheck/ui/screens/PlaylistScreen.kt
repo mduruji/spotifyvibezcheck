@@ -59,9 +59,13 @@ fun PlaylistScreen(navController: NavController, viewModel: PlaylistViewModel = 
                 .padding(innerPadding)
         ) {
             items(playlists) {
-                PlaylistCard(playlist = it) {
-                    navController.navigate(NavRoutes.PlaylistRoom.createRoute(it.id))
-                }
+                PlaylistCard(
+                    playlist = it,
+                    onCardClick = {
+                        navController.navigate(NavRoutes.PlaylistRoom.createRoute(it.id))
+                    },
+                    onPlayClick = { viewModel.playPlaylist(it) }
+                )
             }
         }
     }
