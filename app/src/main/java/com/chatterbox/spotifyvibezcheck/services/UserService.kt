@@ -125,6 +125,26 @@ class UserService {
         }
     }
 
+    suspend fun updatePlaylistCollaborators(playlistId: String, collaboratorIds: List<String>): Boolean {
+        return try {
+            db.collection("playlists").document(playlistId).update("collaborators", collaboratorIds).await()
+            true
+        } catch (e: Exception) {
+            Log.e("UserService", "Failed to update playlist collaborators: $playlistId", e)
+            false
+        }
+    }
+
+    suspend fun addPlaylistToUser(userId: String, playlistId: String): Boolean {
+        return try {
+            db.collection("users").document(userId).update("playlists", FieldValue.arrayUnion(playlistId)).await()
+            true
+        } catch (e: Exception) {
+            Log.e("UserService", "Failed to add playlist to user: $userId", e)
+            false
+        }
+    }
+
 
     /**
      * Fetch a user document by userId.
