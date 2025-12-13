@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -22,7 +23,8 @@ import com.chatterbox.spotifyvibezcheck.data.UserPlaylist
 fun PlaylistCard(
     playlist: UserPlaylist,
     onCardClick: (UserPlaylist) -> Unit,
-    onPlayClick: (UserPlaylist) -> Unit
+    onPlayClick: (UserPlaylist) -> Unit,
+    onDeleteClick: (UserPlaylist) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -48,6 +50,9 @@ fun PlaylistCard(
                     text = "${playlist.numberOfSongs} songs",
                     style = MaterialTheme.typography.bodyMedium
                 )
+            }
+            IconButton(onClick = { onDeleteClick(playlist) }) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Playlist")
             }
         }
     }

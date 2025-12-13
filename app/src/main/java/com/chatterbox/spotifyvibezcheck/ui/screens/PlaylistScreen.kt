@@ -1,5 +1,9 @@
 package com.chatterbox.spotifyvibezcheck.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -58,14 +65,25 @@ fun PlaylistScreen(navController: NavController, viewModel: PlaylistViewModel = 
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            items(playlists) {
-                PlaylistCard(
-                    playlist = it,
-                    onCardClick = {
-                        navController.navigate(NavRoutes.PlaylistRoom.createRoute(it.id))
-                    },
-                    onPlayClick = { viewModel.playPlaylist(it) }
-                )
+            items(playlists, key = { it.id }) { playlist ->
+                var isVisible by remember { mutableStateOf(true) }
+
+                AnimatedVisibility(
+                    visible = isVisible,
+                    exit = fadeOut(animationSpec = tween(500)) + shrinkVertically(animationSpec = tween(500))
+                ) {
+                    PlaylistCard(
+                        playlist = playlist,
+                        onCardClick = {
+                            navController.navigate(NavRoutes.PlaylistRoom.createRoute(playlist.id))
+                        },
+                        onPlayClick = { viewModel.playPlaylist(playlist) },
+                        onDeleteClick = {
+                            isVisible = false
+                            viewModel.deletePlaylist(playlist)
+                        }
+                    )
+                }
             }
         }
     }

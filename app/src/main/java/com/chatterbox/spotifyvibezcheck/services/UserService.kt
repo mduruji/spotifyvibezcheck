@@ -57,6 +57,20 @@ class UserService {
         }
     }
 
+    suspend fun deletePlaylist(userId: String, playlistId: String): Boolean {
+        return try {
+            val userDocRef = db.collection("users").document(userId)
+            userDocRef.update("playlists", FieldValue.arrayRemove(playlistId)).await()
+
+            db.collection("playlists").document(playlistId).delete().await()
+            Log.d("UserService", "Playlist deleted: $playlistId for user: $userId")
+            true
+        } catch (e: Exception) {
+            Log.e("UserService", "Failed to delete playlist: $playlistId for user: $userId", e)
+            false
+        }
+    }
+
     suspend fun addSongsToPlaylist(playlistId: String, trackIds: List<String>): Boolean {
         return try {
             db.collection("playlists").document(playlistId).update("trackIds", FieldValue.arrayUnion(*trackIds.toTypedArray())).await()

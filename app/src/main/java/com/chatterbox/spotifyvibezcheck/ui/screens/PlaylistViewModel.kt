@@ -40,4 +40,15 @@ class PlaylistViewModel(application: Application) : AndroidViewModel(application
             spotifyService.playTrack("spotify:playlist:${playlist.spotifyId}")
         }
     }
+
+    fun deletePlaylist(playlist: UserPlaylist) {
+        viewModelScope.launch {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            if (userId != null) {
+                spotifyService.unfollowPlaylist(playlist.spotifyId)
+                userService.deletePlaylist(userId, playlist.id)
+                fetchPlaylists() // Refresh the list
+            }
+        }
+    }
 }

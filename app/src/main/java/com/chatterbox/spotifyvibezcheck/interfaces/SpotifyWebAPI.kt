@@ -10,6 +10,7 @@ import com.chatterbox.spotifyvibezcheck.models.SearchResponse
 import com.chatterbox.spotifyvibezcheck.models.User
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -46,6 +47,11 @@ interface SpotifyWebAPI {
     suspend fun addTracksToPlaylist(
         @Path("playlist_id") playlistId: String,
         @Body body: AddTracksToPlaylistRequest
+    ): Response<Unit>
+
+    @DELETE("playlists/{playlist_id}/followers")
+    suspend fun unfollowPlaylist(
+        @Path("playlist_id") playlistId: String
     ): Response<Unit>
 
     @GET("me/player/currently-playing")
