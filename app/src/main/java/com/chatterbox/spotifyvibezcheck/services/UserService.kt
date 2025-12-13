@@ -83,7 +83,11 @@ class UserService {
 
     suspend fun addSongSuggestion(playlistId: String, suggestion: SongSuggestion): Boolean {
         return try {
-            db.collection("playlists").document(playlistId).update("suggestedSongs", FieldValue.arrayUnion(suggestion)).await()
+            val playlistRef = db.collection("playlists").document(playlistId)
+            db.runBatch {
+                it.update(playlistRef, "suggestedSongs", FieldValue.arrayUnion(suggestion))
+                it.update(playlistRef, "numberOfSongs", FieldValue.increment(1))
+            }.await()
             true
         } catch (e: Exception) {
             Log.e("UserService", "Failed to add song suggestion to playlist: $playlistId", e)
