@@ -28,16 +28,31 @@ class SuggestionViewModel(application: Application) : AndroidViewModel(applicati
     fun voteForSong(playlistId: String, trackId: String) {
         viewModelScope.launch {
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+
             if (userService.voteForSong(playlistId, trackId, userId)) {
-                val playlist = _playlist.value
-                val suggestion = playlist?.suggestedSongs?.find { it.trackId == trackId }
-                if (playlist != null && suggestion != null && (suggestion.votes.size + 1) >= playlist.collaborators.size) {
-                    spotifyService.addTracksToPlaylist(playlistId, listOf("spotify:track:$trackId"))
-                    userService.addSongsToPlaylist(playlistId, listOf(trackId))
-                    userService.removeSuggestion(playlistId, trackId)
+                val updatedPlaylist = userService.getPlaylist(playlistId)
+                val suggestion = updatedPlaylist?.suggestedSongs?.find { it.trackId == trackId }
+
+                if (updatedPlaylist != null && suggestion != null) {
+                    val collaboratorCount = if (updatedPlaylist.collaborators.isNotEmpty()) updatedPlaylist.collaborators.size else 1
+
+                    if (suggestion.votes.size >= collaboratorCount) {
+
+                        val realSpotifyId = updatedPlaylist.spotifyId
+
+                        if (realSpotifyId.isNotEmpty()) {
+                            spotifyService.addTracksToPlaylist(realSpotifyId, listOf("spotify:track:$trackId"))
+
+                            userService.addSongsToPlaylist(playlistId, listOf(trackId))
+                            userService.removeSuggestion(playlistId, trackId)
+                        }
+                    }
                 }
-                loadPlaylist(playlistId) // Refresh the playlist
+
+                loadPlaylist(playlistId)
             }
         }
     }
+
+
 }

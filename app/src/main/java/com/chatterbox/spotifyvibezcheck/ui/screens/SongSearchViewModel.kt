@@ -36,9 +36,10 @@ class SongSearchViewModel(application: Application) : AndroidViewModel(applicati
                 val suggestion = SongSuggestion(
                     trackId = track.id,
                     trackName = track.name,
-                    artistName = track.artists.firstOrNull()?.name ?: "Unknown Artist",
+                    artistName = track.artists.firstOrNull()?.name ?: "Unknown",
                     albumArtUrl = track.album.images.firstOrNull()?.url,
-                    suggestedBy = userId
+                    suggestedBy = userId,
+                    votes = listOf(userId)
                 )
                 userService.addSongSuggestion(playlistId, suggestion)
             }
