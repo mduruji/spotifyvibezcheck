@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.chatterbox.spotifyvibezcheck.data.User
+import com.chatterbox.spotifyvibezcheck.services.SpotifyApiClient
 import com.chatterbox.spotifyvibezcheck.services.UserService
 import com.chatterbox.spotifyvibezcheck.ui.components.FriendCardRequest
 import com.google.firebase.auth.FirebaseAuth
@@ -29,11 +30,19 @@ fun RequestScreen(navController: NavController) {
     val userService = remember { UserService() }
     var requests by remember { mutableStateOf<List<User>>(emptyList()) }
     val scope = rememberCoroutineScope()
+    val spotifyApiClient = remember { SpotifyApiClient(token = "") } // This token needs to be properly managed
 
     LaunchedEffect(Unit) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
-            requests = userService.getFriendRequests(currentUser.uid)
+            val friendRequests = userService.getFriendRequests(currentUser.uid)
+            val fullUserDetails = friendRequests.mapNotNull { user ->
+                val spotifyUser = spotifyApiClient.getUser(user.spotifyUser).body()
+                spotifyUser?.let {
+                    user.copy(photoUrl = it.images.firstOrNull()?.url ?: "")
+                }
+            }
+            requests = fullUserDetails
         }
     }
 

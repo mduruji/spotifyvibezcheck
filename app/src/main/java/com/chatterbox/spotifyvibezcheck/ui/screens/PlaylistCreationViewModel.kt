@@ -53,7 +53,7 @@ class PlaylistCreationViewModel(application: Application) : AndroidViewModel(app
 
                 if (spotifyPlaylist != null) {
                     val userPlaylist = UserPlaylist(
-                        id = spotifyPlaylist.id,
+                        spotifyId = spotifyPlaylist.id, // <--- CRITICAL FIX HERE
                         name = spotifyPlaylist.name,
                         ownerId = firebaseUserId,
                         imageUrl = spotifyPlaylist.images.firstOrNull()?.url

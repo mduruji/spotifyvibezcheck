@@ -17,45 +17,42 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface SpotifyWebAPI {
+
     @GET("me")
-    suspend fun getCurrentUser(
-        @Header("Authorization") authorization: String
+    suspend fun getCurrentUser(): Response<User>
+
+    @GET("users/{user_id}")
+    suspend fun getUser(
+        @Path("user_id") userId: String
     ): Response<User>
 
     @GET("me/playlists")
     suspend fun getUserPlaylists(
-        @Header("Authorization") authorization: String,
         @Query("limit") limit: Int = 20
     ): Response<PlaylistResponse>
 
     @GET("playlists/{playlist_id}/tracks")
     suspend fun getPlaylistTracks(
-        @Header("Authorization") authorization: String,
         @Path("playlist_id") playlistId: String
     ): Response<PlaylistTracksResponse>
 
     @POST("users/{user_id}/playlists")
     suspend fun createPlaylist(
-        @Header("Authorization") authorization: String,
         @Path("user_id") userId: String,
         @Body body: CreatePlaylistRequest
     ): Response<Playlist>
 
     @POST("playlists/{playlist_id}/tracks")
     suspend fun addTracksToPlaylist(
-        @Header("Authorization") authorization: String,
         @Path("playlist_id") playlistId: String,
         @Body body: AddTracksToPlaylistRequest
     ): Response<Unit>
 
     @GET("me/player/currently-playing")
-    suspend fun getCurrentlyPlaying(
-        @Header("Authorization") authorization: String
-    ): Response<CurrentlyPlaying>
+    suspend fun getCurrentlyPlaying(): Response<CurrentlyPlaying>
 
     @GET("search")
     suspend fun searchTracks(
-        @Header("Authorization") authorization: String,
         @Query("q") query: String,
         @Query("type") type: String = "track",
         @Query("limit") limit: Int = 20
