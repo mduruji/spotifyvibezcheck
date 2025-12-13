@@ -81,8 +81,7 @@ fun PlaylistRoom(
             LazyColumn(modifier = Modifier.padding(padding)) {
                 items(tracks) { item ->
                     TrackRow(track = item) {
-                        // Optional: Play track on click
-                        // viewModel.playTrack(item.track.uri)
+                        viewModel.playTrack(item.track.uri)
                     }
                 }
             }

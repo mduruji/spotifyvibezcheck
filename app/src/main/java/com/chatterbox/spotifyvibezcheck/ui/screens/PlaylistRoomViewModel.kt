@@ -24,6 +24,10 @@ class PlaylistRoomViewModel(application: Application) : AndroidViewModel(applica
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
+    init {
+        spotifyService.connectRemote { }
+    }
+
     // We receive the FIRESTORE ID here
     fun loadTracks(firestorePlaylistId: String) {
         viewModelScope.launch {
@@ -44,5 +48,9 @@ class PlaylistRoomViewModel(application: Application) : AndroidViewModel(applica
             }
             _isLoading.value = false
         }
+    }
+
+    fun playTrack(uri: String) {
+        spotifyService.playTrack(uri)
     }
 }
