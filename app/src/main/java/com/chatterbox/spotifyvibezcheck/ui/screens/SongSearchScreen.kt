@@ -74,13 +74,18 @@ fun SongSearchScreen(navController: NavController, playlistId: String, viewModel
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 items(searchResults) { track ->
-                    SongCardSearch(track = track, isSelected = selectedTracks.containsKey(track.id)) {
-                        if (selectedTracks.containsKey(track.id)) {
-                            selectedTracks.remove(track.id)
-                        } else {
-                            selectedTracks[track.id] = track
-                        }
-                    }
+                    SongCardSearch(
+                        track = track, 
+                        isSelected = selectedTracks.containsKey(track.id),
+                        onSelectionChanged = {
+                            if (selectedTracks.containsKey(track.id)) {
+                                selectedTracks.remove(track.id)
+                            } else {
+                                selectedTracks[track.id] = track
+                            }
+                        },
+                        onPlayClick = { viewModel.playTrack(track.uri) }
+                    )
                 }
             }
         }

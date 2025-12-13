@@ -1,12 +1,14 @@
 package com.chatterbox.spotifyvibezcheck.ui.screens
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.chatterbox.spotifyvibezcheck.data.UserPlaylist
 import com.chatterbox.spotifyvibezcheck.services.SpotifyService
 import com.chatterbox.spotifyvibezcheck.services.UserService
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -19,10 +21,21 @@ class SuggestionViewModel(application: Application) : AndroidViewModel(applicati
     private val _playlist = MutableStateFlow<UserPlaylist?>(null)
     val playlist = _playlist.asStateFlow()
 
+    private val _currentUser = MutableStateFlow<FirebaseUser?>(null)
+    val currentUser = _currentUser.asStateFlow()
+
+    init {
+        spotifyService.connectRemote { }
+    }
+
     fun loadPlaylist(playlistId: String) {
         viewModelScope.launch {
             _playlist.value = userService.getPlaylist(playlistId)
         }
+    }
+
+    fun loadCurrentUser() {
+        _currentUser.value = FirebaseAuth.getInstance().currentUser
     }
 
     fun voteForSong(playlistId: String, trackId: String) {
@@ -54,5 +67,7 @@ class SuggestionViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-
+    fun playTrack(trackId: String) {
+        spotifyService.playTrack("spotify:track:$trackId")
+    }
 }

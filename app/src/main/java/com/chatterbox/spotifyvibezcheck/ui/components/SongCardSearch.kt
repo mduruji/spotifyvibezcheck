@@ -20,12 +20,17 @@ import com.chatterbox.spotifyvibezcheck.R
 import com.chatterbox.spotifyvibezcheck.models.Track
 
 @Composable
-fun SongCardSearch(track: Track, isSelected: Boolean, onSelectionChanged: (Boolean) -> Unit) {
+fun SongCardSearch(
+    track: Track,
+    isSelected: Boolean,
+    onSelectionChanged: (Boolean) -> Unit,
+    onPlayClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onSelectionChanged(!isSelected) }
+            .clickable { onPlayClick() }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

@@ -38,4 +38,16 @@ class SpotifyService(
 
     suspend fun searchTracks(query: String): Response<SearchResponse> =
         api.searchTracks(query)
+
+    fun connectRemote(callback: (Boolean) -> Unit) {
+        playback.connect(callback)
+    }
+
+    fun disconnectRemote() {
+        playback.disconnect()
+    }
+
+    fun playTrack(uri: String) {
+        playback.play(uri)
+    }
 }

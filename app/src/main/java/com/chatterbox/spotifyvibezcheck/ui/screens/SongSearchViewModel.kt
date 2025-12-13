@@ -45,4 +45,8 @@ class SongSearchViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
+
+    fun playTrack(uri: String) {
+        spotifyService.playTrack(uri)
+    }
 }

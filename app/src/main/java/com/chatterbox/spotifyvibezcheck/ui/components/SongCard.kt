@@ -21,20 +21,20 @@ import com.chatterbox.spotifyvibezcheck.models.Track
 private val genres = listOf("Rock", "Pop", "Hip Hop", "Jazz", "Classical", "Electronic", "R&B", "Country")
 
 @Composable
-fun SongCard(track: Track) {
+fun SongCard(track: Track, onPlayClick: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         onClick = {
-            // onCardClick(playlist)
+            onPlayClick(track.uri)
         }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /* TODO */ }) {
+            IconButton(onClick = { onPlayClick(track.uri) }) {
                 Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play Song")
             }
             Column(
