@@ -248,7 +248,7 @@ class UserService {
      */
     suspend fun sendFriendRequest(senderId: String, receiverId: String): Boolean {
         return try {
-            db.collection("users").document(receiverId).update("requests", FieldValue.arrayUnion(senderId)).await()
+            db.collection("users").document(receiverId).update("friendRequests", FieldValue.arrayUnion(senderId)).await()
             Log.d("UserService", "Friend request sent from $senderId to $receiverId")
             true
         } catch (e: Exception) {
@@ -268,7 +268,7 @@ class UserService {
 
             db.runBatch { batch ->
                 batch.update(currentUserDocRef, "friends", FieldValue.arrayUnion(requesterId))
-                batch.update(currentUserDocRef, "requests", FieldValue.arrayRemove(requesterId))
+                batch.update(currentUserDocRef, "friendRequests", FieldValue.arrayRemove(requesterId))
                 batch.update(requesterDocRef, "friends", FieldValue.arrayUnion(currentUserId))
             }.await()
 
@@ -283,7 +283,7 @@ class UserService {
     suspend fun getFriendRequests(userId: String): List<User> {
         return try {
             val document = db.collection("users").document(userId).get().await()
-            val requestIds = document.get("requests") as? List<String> ?: emptyList()
+            val requestIds = document.get("friendRequests") as? List<String> ?: emptyList()
             requestIds.mapNotNull { friendId ->
                 val friendDoc = db.collection("users").document(friendId).get().await()
                 friendDoc.toObject(User::class.java)?.copy(userId = friendDoc.id)
@@ -296,7 +296,7 @@ class UserService {
 
     suspend fun declineFriendRequest(currentUserId: String, requesterId: String): Boolean {
         return try {
-            db.collection("users").document(currentUserId).update("requests", FieldValue.arrayRemove(requesterId)).await()
+            db.collection("users").document(currentUserId).update("friendRequests", FieldValue.arrayRemove(requesterId)).await()
             Log.d("UserService", "Friend request from $requesterId declined by $currentUserId")
             true
         } catch (e: Exception) {

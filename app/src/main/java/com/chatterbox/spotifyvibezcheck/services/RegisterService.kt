@@ -2,7 +2,6 @@ package com.chatterbox.spotifyvibezcheck.services
 
 import android.util.Log
 import com.chatterbox.spotifyvibezcheck.data.User
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -17,6 +16,7 @@ class RegisterService(private val authService: AuthService) {
                 val newUser = User(
                     userId = user.uid,
                     username = username,
+                    email = email,
                     photoUrl = ""
                 )
                 db.collection("users").document(user.uid).set(newUser).await()
