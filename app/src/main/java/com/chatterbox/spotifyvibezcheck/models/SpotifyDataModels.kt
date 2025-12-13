@@ -2,6 +2,10 @@ package com.chatterbox.spotifyvibezcheck.models
 
 import com.google.gson.annotations.SerializedName
 
+data class AddTracksToPlaylistRequest(
+    val uris: List<String>
+)
+
 data class CreatePlaylistRequest(
     val name: String,
     val public: Boolean = false
@@ -52,7 +56,8 @@ data class Track(
     val id: String,
     val name: String,
     val artists: List<Artist>,
-    val album: Album
+    val album: Album,
+    val uri: String
 )
 
 data class Artist(

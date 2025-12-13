@@ -15,14 +15,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.chatterbox.spotifyvibezcheck.models.User
 import com.chatterbox.spotifyvibezcheck.navigation.NavRoutes
-import com.chatterbox.spotifyvibezcheck.ui.screens.SpotifyAuthScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.AddCollaboratorsScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.FriendSearchScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.LoginScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.PlaybackScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.PlaylistCreationScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.PlaylistRoom
 import com.chatterbox.spotifyvibezcheck.ui.screens.PlaylistScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.ProfileScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.RequestScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.SignupScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.SongSearchScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.SpotifyAuthScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.SuggestionScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.WelcomeScreen
 import com.chatterbox.spotifyvibezcheck.services.AuthService
 import com.chatterbox.spotifyvibezcheck.services.RegisterService
@@ -30,8 +35,6 @@ import com.chatterbox.spotifyvibezcheck.services.SpotifyAuthManager
 import com.chatterbox.spotifyvibezcheck.objects.SpotifyConstants
 import com.chatterbox.spotifyvibezcheck.services.SpotifyService
 import com.chatterbox.spotifyvibezcheck.services.UserService
-import com.chatterbox.spotifyvibezcheck.ui.screens.FriendSearchScreen
-import com.chatterbox.spotifyvibezcheck.ui.screens.RequestScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.chatterbox.spotifyvibezcheck.ui.theme.SpotifyVibezCheckTheme
@@ -194,6 +197,30 @@ fun MainScreen(activity: MainActivity) {
         ) { backStackEntry ->
             val playlistId = backStackEntry.arguments?.getString("playlistId") ?: ""
             PlaylistRoom(navController, playlistId)
+        }
+
+        composable(
+            route = NavRoutes.Suggestion.route,
+            arguments = listOf(navArgument("playlistId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val playlistId = backStackEntry.arguments?.getString("playlistId") ?: ""
+            SuggestionScreen(navController, playlistId)
+        }
+
+        composable(
+            route = NavRoutes.AddCollaborators.route,
+            arguments = listOf(navArgument("playlistId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val playlistId = backStackEntry.arguments?.getString("playlistId") ?: ""
+            AddCollaboratorsScreen(navController, playlistId)
+        }
+
+        composable(
+            route = NavRoutes.SongSearch.route,
+            arguments = listOf(navArgument("playlistId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val playlistId = backStackEntry.arguments?.getString("playlistId") ?: ""
+            SongSearchScreen(navController, playlistId)
         }
     }
 }

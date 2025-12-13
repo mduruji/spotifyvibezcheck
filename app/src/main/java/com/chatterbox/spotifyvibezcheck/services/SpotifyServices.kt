@@ -2,9 +2,11 @@ package com.chatterbox.spotifyvibezcheck.services
 
 import android.content.Context
 import com.chatterbox.spotifyvibezcheck.interfaces.SpotifyWebAPI
+import com.chatterbox.spotifyvibezcheck.models.AddTracksToPlaylistRequest
 import com.chatterbox.spotifyvibezcheck.models.CreatePlaylistRequest
 import com.chatterbox.spotifyvibezcheck.models.Playlist
 import com.chatterbox.spotifyvibezcheck.models.PlaylistTracksResponse
+import com.chatterbox.spotifyvibezcheck.models.SearchResponse
 import com.chatterbox.spotifyvibezcheck.models.User
 import com.spotify.protocol.types.PlayerState
 import retrofit2.Response
@@ -31,6 +33,16 @@ class SpotifyService(
     suspend fun createPlaylist(userId: String, name: String): Response<Playlist> {
         val token = tokenProvider() ?: throw IllegalStateException("Missing Spotify token")
         return api.createPlaylist("Bearer $token", userId, CreatePlaylistRequest(name))
+    }
+
+    suspend fun addTracksToPlaylist(playlistId: String, trackUris: List<String>): Response<Unit> {
+        val token = tokenProvider() ?: throw IllegalStateException("Missing Spotify token")
+        return api.addTracksToPlaylist("Bearer $token", playlistId, AddTracksToPlaylistRequest(trackUris))
+    }
+
+    suspend fun searchTracks(query: String): Response<SearchResponse> {
+        val token = tokenProvider() ?: throw IllegalStateException("Missing Spotify token")
+        return api.searchTracks("Bearer $token", query)
     }
 
     fun connectToSpotifyRemote(callback: (Boolean) -> Unit) {

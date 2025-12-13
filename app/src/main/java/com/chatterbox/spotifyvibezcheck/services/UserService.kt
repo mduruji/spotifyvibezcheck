@@ -1,6 +1,7 @@
 package com.chatterbox.spotifyvibezcheck.services
 
 import android.util.Log
+import com.chatterbox.spotifyvibezcheck.data.SongSuggestion
 import com.chatterbox.spotifyvibezcheck.data.User
 import com.chatterbox.spotifyvibezcheck.data.UserPlaylist
 import com.google.firebase.firestore.FieldValue
@@ -11,6 +12,9 @@ class UserService {
 
     private val db = FirebaseFirestore.getInstance()
 
+    /**
+     * Creates a new playlist in the `playlists` collection and adds the playlist ID to the user's `playlists` array.
+     */
     suspend fun createPlaylistForUser(userId: String, playlist: UserPlaylist): UserPlaylist? {
         return try {
             val playlistDocRef = db.collection("playlists").add(playlist).await()
@@ -26,6 +30,9 @@ class UserService {
         }
     }
 
+    /**
+     * Gets a user's playlists.
+     */
     suspend fun getUserPlaylists(userId: String): List<UserPlaylist> {
         return try {
             val userDoc = db.collection("users").document(userId).get().await()
@@ -41,7 +48,69 @@ class UserService {
         }
     }
 
+    suspend fun getPlaylist(playlistId: String): UserPlaylist? {
+        return try {
+            db.collection("playlists").document(playlistId).get().await().toObject(UserPlaylist::class.java)
+        } catch (e: Exception) {
+            Log.e("UserService", "Failed to get playlist: $playlistId", e)
+            null
+        }
+    }
 
+    suspend fun addSongsToPlaylist(playlistId: String, trackIds: List<String>): Boolean {
+        return try {
+            db.collection("playlists").document(playlistId).update("trackIds", FieldValue.arrayUnion(*trackIds.toTypedArray())).await()
+            true
+        } catch (e: Exception) {
+            Log.e("UserService", "Failed to add songs to playlist: $playlistId", e)
+            false
+        }
+    }
+
+    suspend fun addSongSuggestion(playlistId: String, suggestion: SongSuggestion): Boolean {
+        return try {
+            db.collection("playlists").document(playlistId).update("suggestedSongs", FieldValue.arrayUnion(suggestion)).await()
+            true
+        } catch (e: Exception) {
+            Log.e("UserService", "Failed to add song suggestion to playlist: $playlistId", e)
+            false
+        }
+    }
+
+    suspend fun voteForSong(playlistId: String, trackId: String, userId: String): Boolean {
+        return try {
+            val playlist = getPlaylist(playlistId) ?: return false
+            val updatedSuggestions = playlist.suggestedSongs.map {
+                if (it.trackId == trackId) {
+                    it.copy(votes = it.votes + userId)
+                } else {
+                    it
+                }
+            }
+            db.collection("playlists").document(playlistId).update("suggestedSongs", updatedSuggestions).await()
+            true
+        } catch (e: Exception) {
+            Log.e("UserService", "Failed to vote for song: $trackId in playlist: $playlistId", e)
+            false
+        }
+    }
+
+    suspend fun removeSuggestion(playlistId: String, trackId: String): Boolean {
+        return try {
+            val playlist = getPlaylist(playlistId) ?: return false
+            val updatedSuggestions = playlist.suggestedSongs.filter { it.trackId != trackId }
+            db.collection("playlists").document(playlistId).update("suggestedSongs", updatedSuggestions).await()
+            true
+        } catch (e: Exception) {
+            Log.e("UserService", "Failed to remove suggestion: $trackId from playlist: $playlistId", e)
+            false
+        }
+    }
+
+
+    /**
+     * Fetch a user document by userId.
+     */
     suspend fun getUser(userId: String): User? {
         return try {
             val snapshot = db.collection("users")
@@ -56,6 +125,12 @@ class UserService {
         }
     }
 
+
+    /**
+     * Update ANY user fields (partial update).
+     * Example:
+     * updateUserFields(userId, mapOf("username" to "newName"))
+     */
     suspend fun updateUserFields(userId: String, fields: Map<String, Any?>): Boolean {
         return try {
             db.collection("users")
@@ -71,6 +146,11 @@ class UserService {
         }
     }
 
+
+    /**
+     * Update the *entire* user document.
+     * Uses `.set(user)` to overwrite the document with the new User object.
+     */
     suspend fun updateEntireUser(userId: String, user: User): Boolean {
         return try {
             db.collection("users")
@@ -86,6 +166,10 @@ class UserService {
         }
     }
 
+
+    /**
+     * Spotify updater (calls the generic partial update function).
+     */
     suspend fun updateSpotifyData(
         userId: String,
         spotifyUser: String,
@@ -100,6 +184,9 @@ class UserService {
         return updateUserFields(userId, updateMap)
     }
 
+    /**
+     * Gets a user's username by their ID.
+     */
     suspend fun getUsername(userId: String): String? {
         return try {
             val document = db.collection("users").document(userId).get().await()
@@ -120,6 +207,9 @@ class UserService {
         }
     }
 
+    /**
+     * Gets a user's friends.
+     */
     suspend fun getFriends(userId: String): List<User> {
         return try {
             val document = db.collection("users").document(userId).get().await()
@@ -134,6 +224,9 @@ class UserService {
         }
     }
 
+    /**
+     * Search for users by their username.
+     */
     suspend fun searchUsersByUsername(username: String): List<User> {
         return try {
             val querySnapshot = db.collection("users")
@@ -150,6 +243,9 @@ class UserService {
         }
     }
 
+    /**
+     * Sends a friend request from one user to another.
+     */
     suspend fun sendFriendRequest(senderId: String, receiverId: String): Boolean {
         return try {
             db.collection("users").document(receiverId).update("requests", FieldValue.arrayUnion(senderId)).await()
@@ -161,6 +257,10 @@ class UserService {
         }
     }
 
+    /**
+     * Accepts a friend request.
+     * This adds each user to the other's friends list and removes the request.
+     */
     suspend fun acceptFriendRequest(currentUserId: String, requesterId: String): Boolean {
         return try {
             val currentUserDocRef = db.collection("users").document(currentUserId)

@@ -1,5 +1,6 @@
 package com.chatterbox.spotifyvibezcheck.interfaces
 
+import com.chatterbox.spotifyvibezcheck.models.AddTracksToPlaylistRequest
 import com.chatterbox.spotifyvibezcheck.models.CreatePlaylistRequest
 import com.chatterbox.spotifyvibezcheck.models.CurrentlyPlaying
 import com.chatterbox.spotifyvibezcheck.models.Playlist
@@ -39,6 +40,13 @@ interface SpotifyWebAPI {
         @Path("user_id") userId: String,
         @Body body: CreatePlaylistRequest
     ): Response<Playlist>
+
+    @POST("playlists/{playlist_id}/tracks")
+    suspend fun addTracksToPlaylist(
+        @Header("Authorization") authorization: String,
+        @Path("playlist_id") playlistId: String,
+        @Body body: AddTracksToPlaylistRequest
+    ): Response<Unit>
 
     @GET("me/player/currently-playing")
     suspend fun getCurrentlyPlaying(
