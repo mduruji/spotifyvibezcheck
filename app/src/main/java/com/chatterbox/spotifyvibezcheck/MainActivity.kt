@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            SpotifyVibezCheckTheme {
+            SpotifyVibezCheckTheme(darkTheme = true) {
                 MainScreen(this)
             }
         }

@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +34,10 @@ fun FriendCardRequest(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -51,15 +55,24 @@ fun FriendCardRequest(
             Text(
                 modifier = Modifier.weight(1f).padding(start = 10.dp),
                 text = user.username,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             IconButton(onClick = onAccept) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = "Accept Request")
+                Icon(
+                    imageVector = Icons.Default.Check, 
+                    contentDescription = "Accept Request",
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
 
             IconButton(onClick = onDecline) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = "Decline Request")
+                Icon(
+                    imageVector = Icons.Default.Close, 
+                    contentDescription = "Decline Request",
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         }
     }

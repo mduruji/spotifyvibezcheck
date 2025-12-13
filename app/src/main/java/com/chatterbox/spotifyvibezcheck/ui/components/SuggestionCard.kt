@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +45,10 @@ fun SuggestionCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -67,12 +71,13 @@ fun SuggestionCard(
                     text = suggestion.trackName,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = suggestion.artistName,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
                 )
             }
@@ -80,7 +85,8 @@ fun SuggestionCard(
             IconButton(onClick = onPlay) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
-                    contentDescription = "Play Preview"
+                    contentDescription = "Play Preview",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -88,13 +94,14 @@ fun SuggestionCard(
                 Text(
                     text = "${suggestion.votes.size}", // Show likes count
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(end = 4.dp)
+                    modifier = Modifier.padding(end = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 IconButton(onClick = onVote) {
                     Icon(
                         imageVector = if (isVoted) Icons.Default.ThumbUp else Icons.Outlined.ThumbUp,
                         contentDescription = "Vote",
-                        tint = if (isVoted) Color(0xFF1DB954) else Color.Gray // Green if voted
+                        tint = if (isVoted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

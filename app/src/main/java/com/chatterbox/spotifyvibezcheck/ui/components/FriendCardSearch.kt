@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +27,9 @@ fun FriendCardSearch(user: User, isSelected: Boolean, onSelectionChanged: (Boole
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         onClick = { onSelectionChanged(!isSelected) }
     ) {
         Row(
@@ -44,7 +48,8 @@ fun FriendCardSearch(user: User, isSelected: Boolean, onSelectionChanged: (Boole
             Text(
                 modifier = Modifier.weight(1f).padding(start = 10.dp),
                 text = user.username,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Checkbox(

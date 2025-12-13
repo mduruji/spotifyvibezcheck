@@ -1,5 +1,6 @@
 package com.chatterbox.spotifyvibezcheck.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.chatterbox.spotifyvibezcheck.R
 import com.chatterbox.spotifyvibezcheck.data.User
+import com.chatterbox.spotifyvibezcheck.ui.theme.SpotifyGrey
 
 @Composable
 fun FriendCard(user: User){
@@ -30,6 +33,10 @@ fun FriendCard(user: User){
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, SpotifyGrey),
         onClick = {
             //onCardClick(playlist)
         }
@@ -50,7 +57,8 @@ fun FriendCard(user: User){
             Text(
                 modifier = Modifier.weight(1f).padding(start = 10.dp),
                 text = user.username,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
             IconButton(
                 modifier = Modifier.padding(5.dp),
@@ -60,7 +68,8 @@ fun FriendCard(user: User){
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Home"
+                    contentDescription = "Home",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

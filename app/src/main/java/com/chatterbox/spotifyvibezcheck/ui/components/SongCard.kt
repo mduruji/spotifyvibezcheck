@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +27,9 @@ fun SongCard(track: Track, onPlayClick: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         onClick = {
             onPlayClick(track.uri)
         }
@@ -35,22 +39,29 @@ fun SongCard(track: Track, onPlayClick: (String) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { onPlayClick(track.uri) }) {
-                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "Play Song")
+                Icon(
+                    imageVector = Icons.Default.PlayArrow, 
+                    contentDescription = "Play Song",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
             }
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = track.name,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = track.artists.joinToString { it.name },
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = genres.random(),
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             IconButton(
@@ -61,7 +72,8 @@ fun SongCard(track: Track, onPlayClick: (String) -> Unit) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete Song"
+                    contentDescription = "Delete Song",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

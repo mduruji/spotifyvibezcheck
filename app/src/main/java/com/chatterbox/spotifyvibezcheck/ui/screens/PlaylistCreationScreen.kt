@@ -1,5 +1,6 @@
 package com.chatterbox.spotifyvibezcheck.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,13 +8,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -39,6 +43,11 @@ fun PlaylistCreationScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Create Playlist") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -52,6 +61,7 @@ fun PlaylistCreationScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             TextField(
                 value = playlistName,
@@ -64,9 +74,10 @@ fun PlaylistCreationScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 enabled = playlistName.isNotBlank()
             ) {
-                Text("Create")
+                Text("Create", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
