@@ -22,9 +22,16 @@ class ChatRoomViewModel : ViewModel() {
 
     private val _username = MutableStateFlow("")
 
+    private val _currentUserId = MutableStateFlow<String?>(null)
+    val currentUserId = _currentUserId.asStateFlow()
+
+    init {
+        _currentUserId.value = FirebaseAuth.getInstance().currentUser?.uid
+    }
+
     fun loadMessages(playlistId: String) {
         viewModelScope.launch {
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            val userId = _currentUserId.value
             if (userId != null) {
                 _username.value = userService.getUsername(userId) ?: ""
             }
@@ -40,7 +47,7 @@ class ChatRoomViewModel : ViewModel() {
 
     fun sendMessage(playlistId: String, messageText: String) {
         viewModelScope.launch {
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            val userId = _currentUserId.value
             if (userId != null && messageText.isNotEmpty()) {
                 val message = ChatMessage(
                     playlistId = playlistId,
