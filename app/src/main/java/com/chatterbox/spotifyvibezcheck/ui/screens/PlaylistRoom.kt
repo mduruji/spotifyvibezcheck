@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,6 +73,9 @@ fun PlaylistRoom(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { navController.navigate(NavRoutes.ChatRoom.createRoute(playlistId)) }) {
+                        Icon(Icons.Default.Chat, contentDescription = "Chat Room")
+                    }
                     IconButton(onClick = { navController.navigate(NavRoutes.Suggestion.createRoute(playlistId)) }) {
                         Icon(Icons.Default.Favorite, contentDescription = "Suggestions")
                     }
