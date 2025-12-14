@@ -13,9 +13,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.chatterbox.spotifyvibezcheck.models.User
 import com.chatterbox.spotifyvibezcheck.navigation.NavRoutes
 import com.chatterbox.spotifyvibezcheck.ui.screens.AddCollaboratorsScreen
+import com.chatterbox.spotifyvibezcheck.ui.screens.ChatRoomScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.FriendSearchScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.LoginScreen
 import com.chatterbox.spotifyvibezcheck.ui.screens.PlaybackScreen
@@ -221,6 +221,14 @@ fun MainScreen(activity: MainActivity) {
         ) { backStackEntry ->
             val playlistId = backStackEntry.arguments?.getString("playlistId") ?: ""
             SongSearchScreen(navController, playlistId)
+        }
+
+        composable(
+            route = NavRoutes.ChatRoom.route,
+            arguments = listOf(navArgument("playlistId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val playlistId = backStackEntry.arguments?.getString("playlistId") ?: ""
+            ChatRoomScreen(navController, playlistId)
         }
     }
 }
