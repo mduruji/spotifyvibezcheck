@@ -50,6 +50,7 @@ fun PlaylistRoom(
 ) {
     val tracks by viewModel.tracks.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val playlistName by viewModel.playlistName.collectAsState()
 
     LaunchedEffect(playlistId) {
         viewModel.loadTracks(playlistId)
@@ -58,7 +59,7 @@ fun PlaylistRoom(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Playlist Tracks") },
+                title = { Text(playlistName) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
