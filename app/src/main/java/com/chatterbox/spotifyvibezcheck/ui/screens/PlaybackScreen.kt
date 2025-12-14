@@ -1,5 +1,6 @@
 package com.chatterbox.spotifyvibezcheck.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -32,10 +34,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import androidx.compose.ui.graphics.asImageBitmap
 import com.chatterbox.spotifyvibezcheck.ui.components.BottomNavigationBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,12 +100,23 @@ fun PlaybackScreen(navController: NavController, viewModel: PlaybackViewModel = 
                     0f
                 }
             }
+            val coverArt by viewModel.coverArt.collectAsState()
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.weight(1f)
             ) {
+                if (coverArt != null) {
+                    Image(
+                        bitmap = coverArt!!.asImageBitmap(),
+                        contentDescription = "Album Cover",
+                        modifier = Modifier
+                            .size(300.dp)
+                            .padding(bottom = 24.dp)
+                    )
+                }
+
                 if (track != null) {
                     Text(
                         text = track.name ?: "Unknown Track",

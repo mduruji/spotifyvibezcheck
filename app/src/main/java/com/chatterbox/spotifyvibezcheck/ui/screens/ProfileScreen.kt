@@ -1,17 +1,23 @@
 package com.chatterbox.spotifyvibezcheck.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,8 +34,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.chatterbox.spotifyvibezcheck.data.User
 import com.chatterbox.spotifyvibezcheck.navigation.NavRoutes
 import com.chatterbox.spotifyvibezcheck.services.AuthService
@@ -42,13 +50,13 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun ProfileScreen(navController: NavController, authService: AuthService) {
     val userService = remember { UserService() }
-    var username by remember { mutableStateOf("loading...") }
+    var user by remember { mutableStateOf<User?>(null) }
     var friends by remember { mutableStateOf<List<User>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
-            username = userService.getUsername(userId) ?: "User"
+            user = userService.getUser(userId)
             friends = userService.getFriends(userId)
         }
     }
@@ -102,13 +110,31 @@ fun ProfileScreen(navController: NavController, authService: AuthService) {
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
-                contentAlignment = Alignment.Center
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(text = username)
+                if (user?.photoUrl?.isNotEmpty() == true) {
+                    AsyncImage(
+                        model = user?.photoUrl,
+                        contentDescription = "Profile picture",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier.size(120.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = user?.username ?: "loading...")
             }
 
             LazyColumn(

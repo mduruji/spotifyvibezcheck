@@ -21,6 +21,9 @@ class PlaylistRoomViewModel(application: Application) : AndroidViewModel(applica
     private val _tracks = MutableStateFlow<List<PlaylistTrack>>(emptyList())
     val tracks = _tracks.asStateFlow()
 
+    private val _playlistName = MutableStateFlow("")
+    val playlistName = _playlistName.asStateFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
@@ -36,15 +39,20 @@ class PlaylistRoomViewModel(application: Application) : AndroidViewModel(applica
             // 1. Get the Playlist Document from Firestore first
             val playlist = userService.getPlaylist(firestorePlaylistId)
 
-            if (playlist != null && playlist.spotifyId.isNotEmpty()) {
-                // 2. Use the stored spotifyId to call the API
-                val response = spotifyService.getPlaylistTracks(playlist.spotifyId)
+            if (playlist != null) {
+                _playlistName.value = playlist.name
+                if (playlist.spotifyId.isNotEmpty()) {
+                    // 2. Use the stored spotifyId to call the API
+                    val response = spotifyService.getPlaylistTracks(playlist.spotifyId)
 
-                if (response.isSuccessful && response.body() != null) {
-                    _tracks.value = response.body()!!.items
+                    if (response.isSuccessful && response.body() != null) {
+                        _tracks.value = response.body()!!.items
+                    }
+                } else {
+                    // Handle case where there's no spotifyId, maybe it's a collaborative playlist
                 }
             } else {
-                // Handle error: Playlist not found or missing Spotify ID
+                // Handle error: Playlist not found
             }
             _isLoading.value = false
         }
