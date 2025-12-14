@@ -8,6 +8,8 @@ import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.client.Subscription
 import com.spotify.protocol.types.PlayerState
+import android.graphics.Bitmap
+import com.spotify.protocol.types.ImageUri
 
 class SpotifyPlaybackManager(private val context: Context) {
 
@@ -35,6 +37,21 @@ class SpotifyPlaybackManager(private val context: Context) {
             })
     }
 
+    fun fetchCoverArt(
+        imageUri: ImageUri,
+        callback: (Bitmap?) -> Unit
+    ) {
+        spotifyAppRemote
+            ?.imagesApi
+            ?.getImage(imageUri)
+            ?.setResultCallback { bitmap ->
+                callback(bitmap)
+            }
+            ?.setErrorCallback {
+                Log.e("SpotifyRemote", "Failed to load cover art", it)
+                callback(null)
+            }
+    }
     fun disconnect() {
         playerStateSubscription?.cancel()
         spotifyAppRemote?.let {
