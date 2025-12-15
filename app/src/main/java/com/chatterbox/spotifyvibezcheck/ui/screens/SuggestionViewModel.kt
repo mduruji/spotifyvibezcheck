@@ -30,7 +30,11 @@ class SuggestionViewModel(application: Application) : AndroidViewModel(applicati
 
     fun loadPlaylist(playlistId: String) {
         viewModelScope.launch {
-            _playlist.value = userService.getPlaylist(playlistId)
+            val playlistData = userService.getPlaylist(playlistId)
+            val updatedPlaylist = playlistData?.copy(
+                suggestedSongs = playlistData.suggestedSongs.map { it.copy(genre = "R&B") }
+            )
+            _playlist.value = updatedPlaylist
         }
     }
 

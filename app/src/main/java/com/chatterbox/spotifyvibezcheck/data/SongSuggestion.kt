@@ -6,5 +6,6 @@ data class SongSuggestion(
     val artistName: String = "",
     val albumArtUrl: String? = null,
     val suggestedBy: String = "",
-    val votes: List<String> = emptyList()
+    val votes: List<String> = emptyList(),
+    val genre: String = ""
 )
